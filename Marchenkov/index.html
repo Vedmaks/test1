@@ -9,8 +9,8 @@
         <div style="display: flex; flex: row;">
             <div>
                 <p>Склад</p>
-                <table border=1 id="storage">
-                    <tbody>
+                <table border=1>
+                    <tbody id="stor">
                         <tr>
                             <td>Название</td>
                             <td>Количество</td>
@@ -22,8 +22,8 @@
             </div>
             <div style=" margin-left: 100px;">
                 <p>Корзина</p>
-                <table border=1 id="cart">
-                    <tbody>
+                <table border=1 >
+                    <tbody id="cart">
                         <tr>
                             <td>Название</td>
                             <td>Количество</td>
@@ -32,6 +32,7 @@
                     </tbody>
                 
                 </table>
+                <p id="sum"></p>
             </div>
         </div>
     <script>document.addEventListener("DOMContentLoaded", onLoad())

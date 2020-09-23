@@ -1,20 +1,11 @@
-var storage = [];
+var stor = [];
 var cart = [];
 
 function createProduct(name, count, price) {
     return {name: name, count: count, price: price}
 }
 
-
-cart.push(
-    createProduct('product1', 0, 100),
-    createProduct('product2', 0, 200),
-    createProduct('product3', 0, 300),
-    createProduct('product4', 0, 400),
-)
-
-
-storage.push(
+stor.push(
     createProduct('product1', 4, 100),
     createProduct('product2', 3, 200),
     createProduct('product3', 2, 300),
@@ -23,106 +14,115 @@ storage.push(
 
 function onLoad() {
     
-    var storageTable = document.getElementById('storage');
+    var storageTable = document.getElementById('stor');
 
-    for (var num = 0; num < storage.length; num++) {
-        var product = storage[num];
-        storageTable.innerHTML += 
-        '<tr id="product' + num + '", onclick="putInCart(' + num + ')">' + 
-        '<td>'+product.name+'</td>' + 
-        '<td>'+product.count+'</td>' + 
-        '<td>'+product.price+'</td>' + 
-        '</tr>';
+    for (var num = 0; num < stor.length; num++) {
+        var product = stor[num];
+        var row = document.createElement('tr')
+        var td1 = document.createElement('td')
+        var td2 = document.createElement('td')
+        var td3 = document.createElement('td')
+        td1.innerHTML = product.name
+        td2.innerHTML = product.count
+        td3.innerHTML = product.price
+        row.appendChild(td1)
+        row.appendChild(td2)
+        row.appendChild(td3)
+        row.id = 'stor' + num
+        storageTable.appendChild(row)
+        row.addEventListener('click', handler)
     }
+
+    for (var i = 0; i < stor.length; i++) {
+        cart.push(createProduct('', 0, 0));
+    
+    }
+
 }
 
-function putInCart(num) {
-    
-    var cartTable = document.getElementById('cart');
-    var cartProduct = document.getElementById('cartProduct'+num);
-
-    if (cartProduct == null) {
-        var tbody = document.createElement("tbody");
-        tbody.innerHTML += 
-        '<tr id="cartProduct' + num + '", onclick="putInStorage(' + num + ')">' + 
-        '<td>'+storage[num].name+'</td>' + 
-        '<td>'+(++cart[num].count)+'</td>' + 
-        '<td>'+storage[num].price+'</td>' +
-        '</tr>';
-        cartTable.appendChild(tbody);
-        storage[num]['count']--
+function handler() {
+    if (this.id.slice(0,4) == 'cart') {
+        putInstorage(this.id.slice(4))
     } else {
-        
-        var cartProd = cartProduct.getElementsByTagName("td")
-        var prodCount = document.createElement("td")
-        storage[num]['count']--
-        cart[num]['count']++;
-       
-        
-        prodCount.innerHTML = cart[num]['count'];
-        cartProduct.replaceChild(prodCount, cartProd[1])
-            
+        putIncart(this.id.slice(4))
     }
-
-    var product = document.getElementById('product'+num)
-    var prod = product.getElementsByTagName("td")
-    var count = document.createElement("td")
-    count.innerHTML = storage[num]['count']
-    product.replaceChild(count, prod[1])
-
-    if (storage[num]['count'] == 0) {
-        prod = document.getElementById('product'+num)
-        stor = prod.parentNode;
-        stor.removeChild(prod)
-    }
-
 }
 
-function putInStorage(num) {
+function main(c, s, num) {
+    var a
+    var b
+
+    if (c == 'cart') {
+        a = cart
+        b = stor
+    } else {
+        b = cart
+        a = stor
+    }
     
-    
-    var storageTable = document.getElementById('storage');
-    var product = document.getElementById('product'+num);
+    var table = document.getElementById(c);
+    var product = document.getElementById(c+num);
 
     if (product == null) {
-
-        var tbody = document.createElement("tbody");
-        tbody.innerHTML += 
-        '<tr id="product' + num + '", onclick="putInCart(' + num + ')">' + 
-        '<td>'+storage[num].name+'</td>' + 
-        '<td>'+(++storage[num].count)+'</td>' + 
-        '<td>'+storage[num].price+'</td>' +
-        '</tr>';
-        storageTable.appendChild(tbody);
-        cart[num]['count']--;
-
+        
+        var row = document.createElement('tr')
+        var td1 = document.createElement('td')
+        var td2 = document.createElement('td')
+        var td3 = document.createElement('td')
+        td1.innerHTML = stor[num].name
+        td2.innerHTML = (++a[num].count)
+        td3.innerHTML = stor[num].price
+        row.appendChild(td1)
+        row.appendChild(td2)
+        row.appendChild(td3)
+        row.id = c + num
+        table.appendChild(row)
+        row.addEventListener('click', handler)
+        
+        b[num].count--
     } else {
         
         var prod = product.getElementsByTagName("td")
         var count = document.createElement("td")
-        storage[num]['count']++;
-        cart[num]['count']--;
+        b[num].count--
+        a[num].count++;
         
-        count.innerHTML = storage[num]['count'];
+        count.innerHTML = a[num].count;
         product.replaceChild(count, prod[1])
-         
+            
     }
 
-    var cartProduct = document.getElementById('cartProduct'+num)
-    var cartProd = cartProduct.getElementsByTagName("td")
-    var cartCount = document.createElement("td")
-    cartCount.innerHTML = cart[num]['count'];
-    cartProduct.replaceChild(cartCount, cartProd[1])
+    var sproduct = document.getElementById(s+num)
+    var sprod = sproduct.getElementsByTagName("td")
+    var scount = document.createElement("td")
+    scount.innerHTML = b[num].count
+    sproduct.replaceChild(scount, sprod[1])
 
-    if (cart[num]['count'] == 0) {
-        prod = document.getElementById('cartProduct'+num)
-        cart = prod.parentNode;
-        cart.removeChild(prod)
+    if (b[num].count == 0) {
+        prod = document.getElementById(s+num)
+        parent = prod.parentNode;
+        parent.removeChild(prod)
     }
 
+    getSum();
 }
 
-function test() {
-    alert('good');
+function putIncart(n) {
 
-};
+    main('cart', 'stor', n); 
+}
+
+function putInstorage(n) {
+
+    main('stor', 'cart', n);    
+}
+
+function getSum() {
+    var sum = 0
+    for (var i = 0; i < cart.length; i++) {
+        sum += (cart[i].count * stor[i].price)
+    }
+        
+    var summ = document.getElementById('sum')
+    summ.innerHTML = 'Сумма: ' + sum
+}
